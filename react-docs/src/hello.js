@@ -11,18 +11,57 @@ const element = <h1>Hello, {formatName(user)}</h1>;
 
 ReactDOM.render(element, document.getElementById("root"));
 
-function tick() {
-  const element = (
-    <div>
-      <h1>hello world</h1>
-      <h2>It is {new Date().toLocaleTimeString()}.</h2>
-    </div>
-  );
-  ReactDOM.render(element, document.getElementById("time"));
+class Clock extends React.Component {
+  // コンストラクタは常にpropsを引数とし、親クラスのコンストラクタを呼び出す
+  constructor(props) {
+    super(props);
+    this.state = { date: new Date() };
+  }
+
+  // DOMがレンダーされた後に実行される
+  componentDidMount() {
+    // propsやstate以外にも、何かデータフローに影響しないデータを保存したい場合に
+    // 追加のフィールドを手動でクラスに定義するのは自由！
+    this.timerID = setInterval(() => this.tick(), 1000);
+  }
+
+  // DOMが削除される時
+  componentWillUnmount() {
+    clearInterval(this.timerID);
+  }
+
+  tick() {
+    // コンポーネントのローカルstateの更新をスケジュールするためにthis.setStateを使う
+    this.setState({
+      date: new Date(),
+    });
+  }
+
+  render() {
+    return (
+      <div>
+        <h1>hello world</h1>
+        <h2>It is {this.state.date.toLocaleTimeString()}.</h2>
+      </div>
+    );
+  }
 }
 
+function AppTime() {
+  return (
+    <div>
+      <Clock />
+      <Clock />
+      <Clock />
+    </div>
+  );
+}
+
+ReactDOM.render(<AppTime />, document.getElementById("time"));
+
 // 第一引数の関数を、第二引数のミリSごとに実行する
-setInterval(tick, 1000);
+// Clock自身がタイマーを設定して毎秒ごとに更新するため、ここは削除
+// setInterval(tick, 1000);
 
 // 関数コンポーネント
 function Welcome(props) {
